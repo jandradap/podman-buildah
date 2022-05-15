@@ -5,6 +5,7 @@ RUN useradd build; dnf -y module enable container-tools:rhel8; dnf -y update; dn
 
 # Adjust storage.conf to enable Fuse storage.
 RUN sed -i -e 's|^#mount_program|mount_program|g' -e '/additionalimage.*/a "/var/lib/shared",' /etc/containers/storage.conf
+RUN sed -i "s/# rootless_storage_path/rootless_storage_path/g" /etc/containers/storage.conf
 RUN mkdir -p /var/lib/shared/overlay-images /var/lib/shared/overlay-layers; touch /var/lib/shared/overlay-images/images.lock; touch /var/lib/shared/overlay-layers/layers.lock
 
 # Set up environment variables to note that this is
