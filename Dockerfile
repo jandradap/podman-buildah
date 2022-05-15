@@ -10,6 +10,8 @@ RUN mkdir -p /var/lib/shared/overlay-images /var/lib/shared/overlay-layers; touc
 # Set up environment variables to note that this is
 # not starting with usernamespace and default to
 # isolate the filesystem with chroot.
-ENV _BUILDAH_STARTED_IN_USERNS="" BUILDAH_ISOLATION=chroot
+ENV _BUILDAH_STARTED_IN_USERNS="" \
+    BUILDAH_ISOLATION=chroot \
+    STORAGE_DRIVER=vfs
 
-USER 1001
+USER 100000
