@@ -13,5 +13,3 @@ RUN mkdir -p /var/lib/shared/overlay-images /var/lib/shared/overlay-layers; touc
 ENV _BUILDAH_STARTED_IN_USERNS="" \
     BUILDAH_ISOLATION=chroot \
     STORAGE_DRIVER=vfs
-
-USER 1001
