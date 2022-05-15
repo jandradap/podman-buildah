@@ -1,17 +1,32 @@
-FROM registry.access.redhat.com/ubi8:8.5
+FROM registry.access.redhat.com/ubi8:8.5 AS reposubi
 
+FROM quay.io/openshift/origin-jenkins-agent-base:4.8.0
 
-RUN useradd build; dnf -y module enable container-tools:rhel8; dnf -y update; dnf -y reinstall shadow-utils; dnf -y install podman buildah fuse-overlayfs /etc/containers/storage.conf; rm -rf /var/cache /var/log/dnf* /var/log/yum.*
-
-# Adjust storage.conf to enable Fuse storage.
-RUN sed -i -e 's|^#mount_program|mount_program|g' -e '/additionalimage.*/a "/var/lib/shared",' /etc/containers/storage.conf
-RUN mkdir -p /var/lib/shared/overlay-images /var/lib/shared/overlay-layers; touch /var/lib/shared/overlay-images/images.lock; touch /var/lib/shared/overlay-layers/layers.lock
-
-# Set up environment variables to note that this is
-# not starting with usernamespace and default to
-# isolate the filesystem with chroot.
 ENV _BUILDAH_STARTED_IN_USERNS="" \
     BUILDAH_ISOLATION=chroot \
     STORAGE_DRIVER=vfs
+
+USER root
+
+RUN rm /etc/yum.repos.d/*
+
+COPY --from=reposubi /etc/yum.repos.d/ubi.repo /etc/yum.repos.d/ubi.repo
+
+RUN adduser -g 0 -u 1001 jenkins && \
+    yum -y update && \
+    yum install -y --setopt=tsflags=nodocs podman skopeo buildah --exclude container-selinux && \
+    yum clean all && \
+    chown -R jenkins:0 /home/jenkins && \
+    chmod -R 775 /home/jenkins && \
+    chmod -R 775 /etc/alternatives && \
+    chmod -R 775 /var/lib/alternatives && \
+    chmod -R 775 /usr/lib/jvm && \
+    chmod -R 775 /usr/bin && \
+    chmod 775 /usr/share/man/man1 && \
+    mkdir -p /var/lib/origin && \
+    chmod 775 /var/lib/origin && \
+    chmod u-s /usr/bin/newuidmap && \
+    chmod u-s /usr/bin/newgidmap && \
+    rm -f /var/logs/*
 
 USER 1001
