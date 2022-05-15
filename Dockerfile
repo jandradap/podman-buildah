@@ -11,3 +11,5 @@ RUN mkdir -p /var/lib/shared/overlay-images /var/lib/shared/overlay-layers; touc
 # not starting with usernamespace and default to
 # isolate the filesystem with chroot.
 ENV _BUILDAH_STARTED_IN_USERNS="" BUILDAH_ISOLATION=chroot
+
+USER 1001
