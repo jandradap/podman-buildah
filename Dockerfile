@@ -9,7 +9,7 @@ RUN useradd build; dnf -y module enable container-tools:rhel8; dnf -y update; dn
 ENV _BUILDAH_STARTED_IN_USERNS="" \
     BUILDAH_ISOLATION=chroot
 
-RUN useradd -u 1000 -ms /bin/bash podman; \
+RUN useradd -u 1001 -ms /bin/bash podman; \
     echo podman:100000:999999 >/etc/subuid; \
     echo podman:100000:999999 >/etc/subgid;
 
